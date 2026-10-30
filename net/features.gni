@@ -63,10 +63,8 @@ declare_args() {
   # feature is changed at all.
   enable_bracketed_proxy_uris = is_debug
 
-  # General QUIC proxy support is only available for debug builds.
-  # TODO(crbug.com/367400641): If flag is changed or removed, ensure all
-  # TODOs for this bug are correctly modified.
-  enable_quic_proxy_support = is_debug
+  # General QUIC proxy support is available in all build configurations.
+  enable_quic_proxy_support = true
 
   # The SQL disk cache backend is an experimental feature (crbug.com/422065015).
   # It is enabled only in specific build configurations to avoid increasing the
