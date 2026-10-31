@@ -21,6 +21,7 @@
 #include "base/unguessable_token.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/buildflag.h"
 #include "content/browser/devtools/browser_devtools_agent_host.h"
 #include "content/browser/devtools/devtools_agent_host_impl.h"
 #include "content/browser/devtools/devtools_manager.h"
@@ -38,6 +39,7 @@
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/url_constants.h"
+#include "net/net_buildflags.h"
 #include "url/url_constants.h"
 
 namespace content::protocol {
@@ -1549,7 +1551,9 @@ void TargetHandler::CreateBrowserContext(
   if (in_proxyServer.has_value()) {
     pending_proxy_config_ = net::ProxyConfig();
     pending_proxy_config_->proxy_rules().ParseFromString(
-        in_proxyServer.value());
+        in_proxyServer.value(),
+        /*allow_bracketed_proxy_chains=*/false,
+        /*is_quic_allowed=*/BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT));
     if (in_proxyBypassList.has_value()) {
       pending_proxy_config_->proxy_rules().bypass_rules.ParseFromString(
           in_proxyBypassList.value());

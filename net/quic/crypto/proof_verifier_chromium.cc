@@ -384,7 +384,18 @@ bool ProofVerifierChromium::Job::ShouldAllowUnknownRootForHost(
   if (proof_verifier_->hostnames_to_allow_unknown_roots_.contains("")) {
     return true;
   }
-  return proof_verifier_->hostnames_to_allow_unknown_roots_.contains(hostname);
+  if (proof_verifier_->hostnames_to_allow_unknown_roots_.contains(hostname)) {
+    return true;
+  }
+
+  // SciLoad's QUIC/MASQUE browser proxy is loopback-only and uses an
+  // ephemeral certificate whose exact SPKI is explicitly pinned on the
+  // managed Chromium command line. CertVerifier has already accepted that
+  // pin before this additional QUIC known-root check runs. Do not require
+  // --origin-to-force-quic-on merely to pass the second check for the local
+  // proxy.
+  return hostname == "127.0.0.1" || hostname == "::1" ||
+         hostname == "localhost";
 }
 
 int ProofVerifierChromium::Job::DoVerifyCertComplete(int result) {
